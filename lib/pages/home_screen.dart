@@ -38,15 +38,40 @@ class _HomePageState extends State<HomePage> {
             borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
           ),
           flexibleSpace: ClipRRect(
-            borderRadius: const BorderRadius.vertical(bottom: Radius.circular(24)),
-            child: Image.asset(
-              'assets/images/Top.png',
-              fit: BoxFit.fitWidth,
-              alignment: Alignment.topCenter,
-              width: screenW,
-              height: headerH,
-            ),
+  borderRadius: const BorderRadius.vertical(bottom: Radius.circular(24)),
+  child: Stack(
+    fit: StackFit.expand,
+    children: [
+      // header image (unchanged)
+      Image.asset(
+        'assets/images/Top.png',
+        fit: BoxFit.fitWidth,
+        alignment: Alignment.topCenter,
+        width: screenW,
+        height: headerH,
+      ),
+
+      // ✅ profile button (top-right)
+      Positioned(
+        right: 12,   // tweak to match your art
+        top: 20,      // tweak to match your art
+        child: GestureDetector(
+          onTap: () {
+            // later: replace with pushNamed('/profile') if you add a route
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const _PageStub('Profile')),
+            );
+          },
+          child: Image.asset(
+            'assets/icons/Profile.png',
+            width: 48,   // keeps it square; 48x48 looks good for a 201x200 source
+            height: 48,  // adjust if you want bigger/smaller
           ),
+        ),
+      ),
+    ],
+  ),
+),
         ),
       ),
 
@@ -96,8 +121,8 @@ class _HomePageState extends State<HomePage> {
                       label: 'Nutrient',
                     ),
                     NavigationDestination(
-                      icon: Image.asset('assets/icons/task.png', width: 28, height: 28),
-                      selectedIcon: Image.asset('assets/icons/task.png', width: 28, height: 28),
+                      icon: Image.asset('assets/icons/Goal.png', width: 28, height: 28),
+                      selectedIcon: Image.asset('assets/icons/Goal.png', width: 28, height: 28),
                       label: 'Goal',
                     ),
                     NavigationDestination(
