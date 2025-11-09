@@ -1,142 +1,84 @@
+// lib/pages/goal.dart
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
-// import 'pages/today_page.dart'; // when you have real pages, use them here
 
-class Goal extends StatefulWidget {
-  const Goal({super.key});
-  @override
-  State<Goal> createState() => _GoalState();
-}
+class GoalPage extends StatelessWidget {
+  const GoalPage({super.key, this.progress = 0.50});
 
-class _GoalState extends State<Goal> {
-  int _index = 0;
-
-  // Replace these stubs with your real pages, e.g., TodayPage(), NutrientPage()...
-  final _tabs = const [
-    _PageStub('Task / Today'),
-    _PageStub('Nutrient'),
-    _PageStub('Goal'),
-    _PageStub('Calendar'),
-    _PageStub('Diary'),
-  ];
-
-  void _goTab(int i) => setState(() => _index = i);
+  /// Progress in 0.0–1.0
+  final double progress;
 
   @override
   Widget build(BuildContext context) {
-    final screenW = MediaQuery.of(context).size.width;
-    final headerH = screenW * 146 / 1080; // Top.png ratio
-    final barH    = screenW * 226 / 1080; // ⬅️ Bottom.png ratio
+    final pct = (progress.clamp(0.0, 1.0) * 100).round();
 
-    return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(headerH),
-        child: AppBar(
-          elevation: 0,
-          toolbarHeight: 0,
-          backgroundColor: Colors.transparent,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
-          ),
-          flexibleSpace: ClipRRect(
-  borderRadius: const BorderRadius.vertical(bottom: Radius.circular(24)),
-  child: Stack(
-    fit: StackFit.expand,
-    children: [
-      // header image (unchanged)
-      Image.asset(
-        'assets/images/Top.png',
-        fit: BoxFit.fitWidth,
-        alignment: Alignment.topCenter,
-        width: screenW,
-        height: headerH,
-      ),
-
-      // ✅ profile button (top-right)
-      Positioned(
-        right: 12,   // tweak to match your art
-        top: 20,      // tweak to match your art
-        child: GestureDetector(
-          onTap: () {
-            // later: replace with pushNamed('/profile') if you add a route
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const _PageStub('Profile')),
-            );
-          },
-          child: Image.asset(
-            'assets/icons/Profile.png',
-            width: 48,   // keeps it square; 48x48 looks good for a 201x200 source
-            height: 48,  // adjust if you want bigger/smaller
-          ),
-        ),
-      ),
-    ],
-  ),
-),
-        ),
-      ),
-
-      drawer: Drawer(
-        // ...unchanged...
-      ),
-
-      body: IndexedStack(index: _index, children: _tabs),
-
-      // ⬇️ REPLACED: show Bottom.png behind the NavigationBar
-      bottomNavigationBar: SizedBox(
-        height: barH,
-        child: Stack(
+    return SafeArea(
+      bottom: false,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // background image (keeps aspect ratio and fills width)
-            Positioned.fill(
-              child: Image.asset(
-                'assets/images/Bottom.png',
-                fit: BoxFit.fitWidth,
-                alignment: Alignment.topCenter,
-              ),
-              ),
-            // the actual nav bar, transparent over the image
-            Align(
-              alignment: Alignment.topCenter,
-              child: NavigationBarTheme(
-                data: const NavigationBarThemeData(
-                  backgroundColor: Colors.transparent,
-                  indicatorColor: Color(0xFFE6DEFF), // optional purple pill
-                  elevation: 0,
-                  height: 72,
+            // Header row
+            Row(
+              children: [
+                Text(
+                  'Goal',
+                  style: Theme.of(context)
+                      .textTheme
+                      .headlineMedium
+                      ?.copyWith(fontWeight: FontWeight.w800),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 20),
-                  child: NavigationBar(
-                    selectedIndex: _index,
-                  onDestinationSelected: _goTab,
-                  destinations: [
-                    NavigationDestination(
-                      icon: Image.asset('assets/icons/task.png', width: 28, height: 28),
-                      selectedIcon: Image.asset('assets/icons/task.png', width: 28, height: 28),
-                      label: 'Task',
-                    ),
-                    NavigationDestination(
-                      icon: Image.asset('assets/icons/Nutrients.png', width: 28, height: 28),
-                      selectedIcon: Image.asset('assets/icons/Nutrients.png', width: 28, height: 28),
-                      label: 'Nutrient',
-                    ),
-                    NavigationDestination(
-                      icon: Image.asset('assets/icons/Goal.png', width: 28, height: 28),
-                      selectedIcon: Image.asset('assets/icons/Goal.png', width: 28, height: 28),
-                      label: 'Goal',
-                    ),
-                    NavigationDestination(
-                      icon: Image.asset('assets/icons/Calendar.png', width: 28, height: 28),
-                      selectedIcon: Image.asset('assets/icons/Calendar.png', width: 28, height: 28),
-                      label: 'Calendar',
-                    ),
-                    NavigationDestination(
-                      icon: Image.asset('assets/icons/Diary.png', width: 28, height: 28),
-                      selectedIcon: Image.asset('assets/icons/Diary.png', width: 28, height: 28),
-                      label: 'Diary',
-                    ),
-                  ],
-                  ),
+                const SizedBox(width: 8),
+                GestureDetector(
+                  onTap: () => Navigator.pushNamed(context, '/calendar'),
+                  child: Image.asset('assets/icons/Pencil.png', width: 26, height: 26),
+                ),
+                const Spacer(),
+              ],
+            ),
+            const SizedBox(height: 24),
+
+            // Circular progress
+            Expanded(
+              child: Center(
+                child: LayoutBuilder(
+                  builder: (_, c) {
+                    final size = c.biggest.shortestSide * 0.75; // responsive
+                    return SizedBox(
+                      width: size,
+                      height: size,
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          CustomPaint(
+                            size: Size.square(size),
+                            painter: _RingPainter(progress),
+                          ),
+                          Text(
+                            '$pct%',
+                            style: const TextStyle(
+                              fontSize: 44,
+                              fontWeight: FontWeight.w900,
+                              color: Color(0xFF0C0C0C),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+
+            // Caption
+            Center(
+              child: Text(
+                'You are $pct% of your goal',
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF0C0C0C),
                 ),
               ),
             ),
@@ -145,17 +87,55 @@ class _GoalState extends State<Goal> {
       ),
     );
   }
-
 }
 
-/// Temporary placeholder; swap each with your real page (e.g., TodayPage).
-class _PageStub extends StatelessWidget {
-  final String label;
-  const _PageStub(this.label, {super.key});
+/* ---------------- Painter for the ring ---------------- */
+
+class _RingPainter extends CustomPainter {
+  final double progress; // 0..1
+  _RingPainter(this.progress);
+
   @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text(label, style: Theme.of(context).textTheme.headlineMedium),
+  void paint(Canvas canvas, Size size) {
+    final center = size.center(Offset.zero);
+    final radius = size.width / 2;
+
+    // Colors/thickness (tweak to match your palette)
+    const bgColor = Color(0xFFEED9E9); // light pink ring
+    const fgColor = Color(0xFF1C2BFF); // deep blue progress
+    const knobColor = Color(0xFF1C2BFF);
+    final stroke = radius * 0.12;
+
+    // Background ring
+    final base = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = stroke
+      ..strokeCap = StrokeCap.round
+      ..color = bgColor;
+    canvas.drawCircle(center, radius - stroke / 2, base);
+
+    // Progress arc
+    final sweep = 2 * math.pi * progress.clamp(0.0, 1.0);
+    final start = -math.pi / 2; // 12 o’clock
+    final fg = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = stroke
+      ..strokeCap = StrokeCap.round
+      ..color = fgColor;
+
+    final rect = Rect.fromCircle(center: center, radius: radius - stroke / 2);
+    canvas.drawArc(rect, start, sweep, false, fg);
+
+    // Knob at the end
+    final endAngle = start + sweep;
+    final knobR = stroke * 0.55;
+    final endOffset = Offset(
+      center.dx + (radius - stroke / 2) * math.cos(endAngle),
+      center.dy + (radius - stroke / 2) * math.sin(endAngle),
     );
+    canvas.drawCircle(endOffset, knobR, Paint()..color = knobColor);
   }
+
+  @override
+  bool shouldRepaint(_RingPainter old) => old.progress != progress;
 }
