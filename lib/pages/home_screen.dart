@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'today.dart';
 import 'nutrient.dart';
+import 'calendar.dart';
+import 'diary.dart';
 // import 'pages/today_page.dart'; // when you have real pages, use them here
 
 class HomePage extends StatefulWidget {
