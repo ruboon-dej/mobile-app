@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'profile.dart';
+import 'today.dart';
+import 'nutrient.dart';
+import 'calendar.dart';
+import 'diary.dart';
 // import 'pages/today_page.dart'; // when you have real pages, use them here
 
 class HomePage extends StatefulWidget {
@@ -13,8 +16,8 @@ class _HomePageState extends State<HomePage> {
 
   // Replace these stubs with your real pages, e.g., TodayPage(), NutrientPage()...
   final _tabs = const [
-    _PageStub('Task / Today'),
-    _PageStub('Nutrient'),
+    TodayPage(),
+    NutrientPage(),
     _PageStub('Goal'),
     _PageStub('Calendar'),
     _PageStub('Diary'),
