@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'profile.dart';
 // import 'pages/today_page.dart'; // when you have real pages, use them here
 
 class HomePage extends StatefulWidget {
@@ -57,11 +58,7 @@ class _HomePageState extends State<HomePage> {
         top: 20,      // tweak to match your art
         child: GestureDetector(
           onTap: () {
-            // later: replace with pushNamed('/profile') if you add a route
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const _PageStub('Profile')),
-            );
-          },
+               Navigator.pushNamed(context, '/profile');},
           child: Image.asset(
             'assets/icons/Profile.png',
             width: 48,   // keeps it square; 48x48 looks good for a 201x200 source
