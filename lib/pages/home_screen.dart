@@ -3,6 +3,7 @@ import 'today.dart';
 import 'nutrient.dart';
 import 'calendar.dart';
 import 'diary.dart';
+import 'goal.dart';
 // import 'pages/today_page.dart'; // when you have real pages, use them here
 
 class HomePage extends StatefulWidget {
@@ -18,9 +19,9 @@ class _HomePageState extends State<HomePage> {
   final _tabs = const [
     TodayPage(),
     NutrientPage(),
-    _PageStub('Goal'),
-    _PageStub('Calendar'),
-    _PageStub('Diary'),
+    GoalPage(),
+    CalendarPage(),
+    DiaryPage(),
   ];
 
   void _goTab(int i) => setState(() => _index = i);
