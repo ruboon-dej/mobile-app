@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-
-import 'calendar.dart'; // ✅ add this line
+import 'today.dart';
+import 'nutrient.dart';
+import 'calendar.dart';
 import 'diary.dart';
 // import 'pages/today_page.dart'; // when you have real pages, use them here
 
@@ -15,11 +16,11 @@ class _HomePageState extends State<HomePage> {
 
   // Replace these stubs with your real pages, e.g., TodayPage(), NutrientPage()...
   final _tabs = const [
-    _PageStub('Task / Today'),
-    _PageStub('Nutrient'),
+    TodayPage(),
+    NutrientPage(),
     _PageStub('Goal'),
-     CalendarPage(),
-     DiaryPage(), 
+    _PageStub('Calendar'),
+    _PageStub('Diary'),
   ];
 
   void _goTab(int i) => setState(() => _index = i);
@@ -60,11 +61,7 @@ class _HomePageState extends State<HomePage> {
         top: 20,      // tweak to match your art
         child: GestureDetector(
           onTap: () {
-            // later: replace with pushNamed('/profile') if you add a route
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const _PageStub('Profile')),
-            );
-          },
+               Navigator.pushNamed(context, '/profile');},
           child: Image.asset(
             'assets/icons/Profile.png',
             width: 48,   // keeps it square; 48x48 looks good for a 201x200 source

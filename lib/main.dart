@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'pages/home_screen.dart';
+import 'pages/profile.dart';
 //Task01: import page1,2,3,4,5
 void main() {
   runApp(MyApp());
@@ -15,12 +16,8 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       //Task02: define routing
       routes: {
-        '/': (context) => HomePage(),
-        '/page1': (context) => HomePage(),
-        '/page2': (context) => HomePage(),
-        '/page3': (context) => HomePage(),
-        '/page4': (context) => HomePage(),
-        '/page5': (context) => HomePage(),
+        '/': (context) => const HomePage(),
+        '/profile': (context) => const ProfilePage(), // ✅ parentheses and const
       },
     );
   }
