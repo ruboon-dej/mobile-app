@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+
+import 'calendar.dart'; // ✅ add this line
+import 'diary.dart';
 // import 'pages/today_page.dart'; // when you have real pages, use them here
 
 class HomePage extends StatefulWidget {
@@ -15,8 +18,8 @@ class _HomePageState extends State<HomePage> {
     _PageStub('Task / Today'),
     _PageStub('Nutrient'),
     _PageStub('Goal'),
-    _PageStub('Calendar'),
-    _PageStub('Diary'),
+     CalendarPage(),
+     DiaryPage(), 
   ];
 
   void _goTab(int i) => setState(() => _index = i);
