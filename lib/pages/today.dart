@@ -1,202 +1,76 @@
-import 'dart:io';
+// lib/pages/today.dart
 import 'package:flutter/material.dart';
 
-class TodayPage extends StatefulWidget {
+class TodayPage extends StatelessWidget {
   const TodayPage({super.key});
-  @override
-  State<TodayPage> createState() => _TodayPageState();
-}
-
-class _TodayPageState extends State<TodayPage> {
-  int _tab = 0;
-
-  // Demo items (replace with your data later)
-  final List<_Task> _tasks = const [
-    _Task(
-      title: 'Blender project',
-      time: '08:30',
-      // Put a real asset here, or keep null to see the gradient fallback
-      imagePath: 'assets/images/pink.png',
-      colorHex: 0xFFFF5252, // red
-    ),
-    _Task(
-      title: 'Computer Network',
-      time: '12:00',
-      imagePath: 'assets/images/pink.png',
-      colorHex: 0xFFFFA726, // orange
-    ),
-    _Task(
-      title: 'Write Diary',
-      time: null,
-      imagePath: null,      // shows gradient fallback
-      colorHex: 0xFF42A5F5, // blue
-    ),
-  ];
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // PAGE BODY
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header row: "Today" + edit + profile
-              Row(
-                children: [
-                  Text(
-                    'Today',
-                    style: Theme.of(context)
-                        .textTheme
-                        .headlineMedium
-                        ?.copyWith(fontWeight: FontWeight.w800),
+    final tasks = const [
+      _TaskModel(
+        title: 'Blender project',
+        urgencyColor: Color(0xFFE53935), // red
+        boxImage: 'assets/images/TaskBox.png', // <-- your box image
+      ),
+      _TaskModel(
+        title: 'Computer Network',
+        urgencyColor: Color(0xFFFFB300), // amber
+        boxImage: 'assets/images/TaskBox.png',
+      ),
+    ];
+
+    return SafeArea(
+      bottom: false,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header row: Today + pencil button
+            Row(
+              children: [
+                Text(
+                  'Today',
+                  style: Theme.of(context)
+                      .textTheme
+                      .headlineMedium
+                      ?.copyWith(fontWeight: FontWeight.w800),
+                ),
+                const SizedBox(width: 8),
+                GestureDetector(
+                  onTap: () => Navigator.pushNamed(context, '/calendar'),
+                  child: Image.asset(
+                    'assets/icons/Pencil.png', // <-- your pencil image
+                    width: 28,
+                    height: 28,
                   ),
-                  const SizedBox(width: 8),
-                  IconButton(
-                    visualDensity: VisualDensity.compact,
-                    onPressed: () {
-                      // later: open add/edit sheet
+                ),
+                const Spacer(),
+              ],
+            ),
+            const SizedBox(height: 12),
+
+            // Task tiles
+            Expanded(
+              child: ListView.separated(
+                padding: const EdgeInsets.only(bottom: 16),
+                itemCount: tasks.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 18),
+                itemBuilder: (context, i) {
+                  final t = tasks[i];
+                  return _TaskTile(
+                    title: t.title,
+                    boxImage: t.boxImage,
+                    urgencyColor: t.urgencyColor,
+                    onTap: () {
+                      // later: open task detail
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Edit tapped')),
+                        SnackBar(content: Text('Open: ${t.title}')),
                       );
                     },
-                    icon: const Icon(Icons.edit),
-                  ),
-                  const Spacer(),
-                  IconButton.filledTonal(
-                    onPressed: () {},
-                    icon: const Icon(Icons.person),
-                  ),
-                ],
+                  );
+                },
               ),
-              const SizedBox(height: 8),
-
-              // Tiles list
-              Expanded(
-                child: ListView.separated(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  itemCount: _tasks.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 16),
-                  itemBuilder: (context, i) {
-                    final t = _tasks[i];
-                    return _TaskTile(
-                      title: t.title,
-                      time: t.time,
-                      imagePath: t.imagePath,
-                      dotColor: Color(t.colorHex),
-                      onTap: () {
-                        // later: navigate to detail
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Open: ${t.title}')),
-                        );
-                      },
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-
-      // Bottom nav (static for now)
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _tab,
-        onDestinationSelected: (i) => setState(() => _tab = i),
-        destinations: const [
-          NavigationDestination(icon: Icon(Icons.checklist), label: 'Task'),
-          NavigationDestination(icon: Icon(Icons.restaurant), label: 'Nutrient'),
-          NavigationDestination(icon: Icon(Icons.emoji_events), label: 'Goal'),
-          NavigationDestination(icon: Icon(Icons.calendar_month), label: 'Calendar'),
-          NavigationDestination(icon: Icon(Icons.menu_book), label: 'Diary'),
-        ],
-      ),
-    );
-  }
-}
-
-// === Tile ===
-
-class _TaskTile extends StatelessWidget {
-  final String title;
-  final String? time;
-  final String? imagePath; // asset path or absolute file path; null -> gradient
-  final Color dotColor;
-  final VoidCallback? onTap;
-
-  const _TaskTile({
-    required this.title,
-    required this.dotColor,
-    this.time,
-    this.imagePath,
-    this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: 16 / 5, // wide tile like the sketch
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            // Background: try asset/file if provided, else gradient
-            if (imagePath != null)
-              _SmartBg(path: imagePath!)
-            else
-              Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [dotColor, Colors.black54],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                ),
-              ),
-            // Dark overlay to keep text readable
-            Container(color: Colors.black.withOpacity(0.25)),
-            // Content row: dot • title • time
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Row(
-                children: [
-                  Container(
-                    width: 12,
-                    height: 12,
-                    decoration: BoxDecoration(color: dotColor, shape: BoxShape.circle),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w800,
-                        fontSize: 22,
-                        height: 1.0,
-                      ),
-                    ),
-                  ),
-                  if (time != null)
-                    Text(
-                      time!,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                ],
-              ),
-            ),
-            // Tap effect / handler
-            Material(
-              color: Colors.transparent,
-              child: InkWell(onTap: onTap),
             ),
           ],
         ),
@@ -205,33 +79,93 @@ class _TaskTile extends StatelessWidget {
   }
 }
 
-// Tries to load an asset first; if the string points to a file path that exists, uses Image.file.
-// This lets you later switch to real file paths without changing the UI.
-class _SmartBg extends StatelessWidget {
-  final String path;
-  const _SmartBg({required this.path});
+/* ------------ widgets ------------ */
+
+class _TaskTile extends StatelessWidget {
+  final String title;
+  final String boxImage;      // the rectangle frame image
+  final Color urgencyColor;   // the colored dot (not an image)
+  final VoidCallback? onTap;
+
+  const _TaskTile({
+    required this.title,
+    required this.boxImage,
+    required this.urgencyColor,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    // If it's an absolute path and exists -> file
-    if ((path.startsWith('/') || path.contains(':')) && File(path).existsSync()) {
-      return Image.file(File(path), fit: BoxFit.cover);
-    }
-    // Otherwise treat as asset
-    return Image.asset(path, fit: BoxFit.cover);
+    return AspectRatio(
+      aspectRatio: 800 / 300, // adjust to match your box image proportions
+      child: Stack(
+        children: [
+          // Box image as background
+          Positioned.fill(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(14),
+              child: Image.asset(boxImage, fit: BoxFit.cover),
+            ),
+          ),
+          // Content on top: urgency dot + title
+          Positioned.fill(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+              child: Row(
+                children: [
+                  _UrgencyDot(color: urgencyColor),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFF0C0C0C),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          // Tap effect
+          Positioned.fill(
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(onTap: onTap, borderRadius: BorderRadius.circular(14)),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
-// === simple demo model ===
-class _Task {
+class _UrgencyDot extends StatelessWidget {
+  final Color color;
+  const _UrgencyDot({required this.color});
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 14,
+      height: 14,
+      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+    );
+  }
+}
+
+/* ------------ data model ------------ */
+
+class _TaskModel {
   final String title;
-  final String? time;
-  final String? imagePath;
-  final int colorHex;
-  const _Task({
+  final Color urgencyColor;
+  final String boxImage;
+  const _TaskModel({
     required this.title,
-    this.time,
-    this.imagePath,
-    required this.colorHex,
+    required this.urgencyColor,
+    required this.boxImage,
   });
 }
